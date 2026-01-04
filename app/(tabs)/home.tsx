@@ -1,54 +1,100 @@
-import { View, Text, FlatList, Image, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+  KeyboardAvoidingView,
+} from "react-native";
+import { useRouter } from "expo-router";
 
-// Generate 30 dummy posts
-const posts = Array.from({ length: 30 }, (_, i) => ({
-  id: (i + 1).toString(),
-  title: `Post ${i + 1}`,
-  description: `This is a description for post number ${i + 1}. Keep scrolling to see more posts.`,
-  image: `https://via.placeholder.com/300x150.png?text=Post+${i + 1}`,
-}));
+// Dummy property data
+const allProperties = [
+  { id: "1", title: "2 Bedroom Apartment", location: "Kampala", price: "$300", bedrooms: 2, image: "https://via.placeholder.com/200" },
+  { id: "2", title: "3 Bedroom House", location: "Entebbe", price: "$500", bedrooms: 3, image: "https://via.placeholder.com/200" },
+  { id: "3", title: "Studio Apartment", location: "Kampala", price: "$200", bedrooms: 1, image: "https://via.placeholder.com/200" },
+  { id: "4", title: "4 Bedroom Villa", location: "Mukono", price: "$700", bedrooms: 4, image: "https://via.placeholder.com/200" },
+];
 
-export default function Home() {
-  const renderItem = ({ item }: { item: typeof posts[0] }) => (
-    <View style={styles.card}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.description}>{item.description}</Text>
-    </View>
-  );
+export default function HomeScreen() {
+  const router = useRouter();
+  const [searchText, setSearchText] = useState("");
+  const [properties, setProperties] = useState(allProperties);
+
+  const handleSearch = (text) => {
+    setSearchText(text);
+    const filtered = allProperties.filter((prop) =>
+      prop.title.toLowerCase().includes(text.toLowerCase()) ||
+      prop.location.toLowerCase().includes(text.toLowerCase())
+    );
+    setProperties(filtered);
+  };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        showsVerticalScrollIndicator={true}
-      />
-    </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <View style={styles.container}>
+          {/* Search Bar */}
+          <TextInput
+            placeholder="Search by location or property"
+            value={searchText}
+            onChangeText={handleSearch}
+            style={styles.searchInput}
+          />
+
+          {/* Properties List */}
+          <FlatList
+            data={properties}
+            keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() => router.push(`/property/${item.id}`)}
+              >
+                <Image source={{ uri: item.image }} style={styles.image} />
+                <View style={styles.cardContent}>
+                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.location}>{item.location}</Text>
+                  <Text style={styles.details}>{item.bedrooms} Bedrooms • {item.price}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            ListEmptyComponent={<Text style={styles.emptyText}>No properties found</Text>}
+          />
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 12 },
-  card: {
-    backgroundColor: "#f9f9f9",
+  container: { flex: 1, padding: 16 },
+  searchInput: {
+    backgroundColor: "#f2f2f7",
     borderRadius: 12,
-    marginBottom: 16,
     padding: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 16,
+    fontSize: 16,
   },
-  image: {
-    width: "100%",
-    height: 150,
+  card: {
+    marginBottom: 16,
     borderRadius: 12,
-    marginBottom: 8,
+    overflow: "hidden",
+    backgroundColor: "#f2f2f7",
   },
-  title: { fontSize: 18, fontWeight: "700", marginBottom: 4 },
-  description: { fontSize: 14, color: "#555" },
+  image: { width: "100%", height: 180 },
+  cardContent: { padding: 12 },
+  title: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
+  location: { fontSize: 14, color: "#555", marginBottom: 4 },
+  details: { fontSize: 14, fontWeight: "600" },
+  emptyText: { textAlign: "center", marginTop: 32, color: "#555" },
 });

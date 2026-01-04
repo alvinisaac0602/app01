@@ -1,39 +1,39 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
+import React from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from "react-native";
 import { useRouter } from "expo-router";
+
+// Dummy user data
+const user = {
+  name: "Isaac Kiiza",
+  email: "isaac@example.com",
+  profilePic: "https://via.placeholder.com/150.png?text=Profile+Pic",
+  stats: {
+    favorites: 12,
+    bookings: 5,
+    requests: 3,
+  },
+};
 
 export default function Profile() {
   const router = useRouter();
 
-  // Dummy user data
-  const user = {
-    name: "Isaac Kiiza",
-    email: "isaac@example.com",
-    profilePic: "https://via.placeholder.com/150.png?text=Profile+Pic",
-    stats: {
-      posts: 34,
-      followers: 1200,
-      following: 180,
-    },
-  };
-
-  // Logout function
   const handleLogout = () => {
-    // Optional: ask for confirmation
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Logout",
-          style: "destructive",
-          onPress: () => {
-            // Navigate back to Auth screen
-            router.replace("/");
-          },
-        },
-      ]
-    );
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: () => router.replace("/"),
+      },
+    ]);
   };
 
   return (
@@ -45,44 +45,45 @@ export default function Profile() {
         <Text style={styles.email}>{user.email}</Text>
       </View>
 
-      {/* Stats */}
+      {/* User Stats */}
       <View style={styles.statsContainer}>
         <View style={styles.stat}>
-          <Text style={styles.statNumber}>{user.stats.posts}</Text>
-          <Text style={styles.statLabel}>Posts</Text>
+          <Text style={styles.statNumber}>{user.stats.favorites}</Text>
+          <Text style={styles.statLabel}>Favorites</Text>
         </View>
         <View style={styles.stat}>
-          <Text style={styles.statNumber}>{user.stats.followers}</Text>
-          <Text style={styles.statLabel}>Followers</Text>
+          <Text style={styles.statNumber}>{user.stats.bookings}</Text>
+          <Text style={styles.statLabel}>Bookings</Text>
         </View>
         <View style={styles.stat}>
-          <Text style={styles.statNumber}>{user.stats.following}</Text>
-          <Text style={styles.statLabel}>Following</Text>
+          <Text style={styles.statNumber}>{user.stats.requests}</Text>
+          <Text style={styles.statLabel}>Requests</Text>
         </View>
       </View>
 
-      {/* Edit Profile Button */}
-      <TouchableOpacity style={styles.editBtn}>
-        <Text style={styles.editText}>Edit Profile</Text>
+      {/* Action Buttons */}
+      <TouchableOpacity
+        style={styles.actionBtn}
+        onPress={() => router.push("/edit-profile")}
+      >
+        <Text style={styles.actionText}>Edit Profile</Text>
       </TouchableOpacity>
 
-      {/* Bio Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Bio</Text>
-        <Text style={styles.sectionContent}>
-          Entrepreneur | Investor | Building wealth and helping others achieve financial freedom.
-        </Text>
-      </View>
+      <TouchableOpacity
+        style={styles.actionBtn}
+        onPress={() => router.push("/bookings")}
+      >
+        <Text style={styles.actionText}>Manage Bookings</Text>
+      </TouchableOpacity>
 
-      {/* Recent Posts */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Recent Posts</Text>
-        <Text style={styles.sectionContent}>
-          This is where your recent posts will appear.
-        </Text>
-      </View>
+      <TouchableOpacity
+        style={styles.actionBtn}
+        onPress={() => router.push("/favorites")}
+      >
+        <Text style={styles.actionText}>View Favorites</Text>
+      </TouchableOpacity>
 
-      {/* Logout Button */}
+      {/* Logout */}
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
@@ -92,7 +93,7 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 20,
     backgroundColor: "#fff",
     alignItems: "center",
     paddingBottom: 40,
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
   },
   email: {
     fontSize: 14,
-    color: "#666",
+    color: "#555",
     marginTop: 4,
   },
   statsContainer: {
@@ -122,49 +123,31 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 20,
   },
-  stat: {
+  stat: { alignItems: "center" },
+  statNumber: { fontSize: 18, fontWeight: "700" },
+  statLabel: { fontSize: 14, color: "#666" },
+  actionBtn: {
+    backgroundColor: "#1877F2",
+    paddingVertical: 14,
+    paddingHorizontal: 60,
+    borderRadius: 12,
+    marginTop: 12,
     alignItems: "center",
+    width: "90%",
   },
-  statNumber: {
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  statLabel: {
-    fontSize: 14,
-    color: "#666",
-  },
-  editBtn: {
-    backgroundColor: "#000",
-    paddingVertical: 12,
-    paddingHorizontal: 50,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  editText: {
+  actionText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
-  section: {
-    width: "100%",
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 6,
-  },
-  sectionContent: {
-    fontSize: 14,
-    color: "#555",
-  },
   logoutBtn: {
     backgroundColor: "#ff3b30",
     paddingVertical: 14,
-    paddingHorizontal: 50,
-    borderRadius: 8,
+    paddingHorizontal: 60,
+    borderRadius: 12,
     marginTop: 30,
     alignItems: "center",
+    width: "90%",
   },
   logoutText: {
     color: "#fff",

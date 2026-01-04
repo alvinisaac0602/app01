@@ -7,20 +7,22 @@ export default function TabsLayout() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
-          let iconName: any;
+          let iconName: string = "";
 
-          if (route.name === "home") iconName = "home";
-          if (route.name === "post") iconName = "add-circle";
-          if (route.name === "profile") iconName = "person";
+          if (route.name === "home") iconName = "home-outline";
+          if (route.name === "saved") iconName = "heart-outline";
+          if (route.name === "bookings") iconName = "calendar-outline";
+          if (route.name === "profile") iconName = "person-outline";
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName as any} size={size} color={color} />;
         },
         tabBarActiveTintColor: "#000",
         tabBarInactiveTintColor: "gray",
       })}
     >
       <Tabs.Screen name="home" />
-      <Tabs.Screen name="post" />
+      <Tabs.Screen name="saved" />
+      <Tabs.Screen name="bookings" />
       <Tabs.Screen name="profile" />
     </Tabs>
   );
